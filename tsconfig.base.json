@@ -1,0 +1,23 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "strict": true,
+        "declaration": true,
+        "sourceMap": true,
+        "noUnusedLocals": true,
+        "lib": [
+            "es6",
+            "es2017.object",
+            "dom"
+        ]
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ],
+    "types": [
+        "typePatches"
+    ]
+}

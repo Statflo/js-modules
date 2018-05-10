@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@statflo/calendar Date class Apple Calendar and Outlook should run full config 1`] = `"data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0AURL:https://www.statflo.com%0ADTSTART:20180510T020026Z%0ADTEND:20180510T020908Z%0ASUMMARY:Foobar%0ADESCRIPTION:Monthly%20potluck%0ALOCATION:1%20Yonge%20St,%20Toronto%20-%20ON%20-%20Canada%0AEND:VEVENT%0AEND:VCALENDAR"`;
+
+exports[`@statflo/calendar Date class Apple Calendar and Outlook should run required config 1`] = `"data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0AURL:%0ADTSTART:20180510T020026Z%0ADTEND:%0ASUMMARY:%0ADESCRIPTION:%0ALOCATION:%0AEND:VEVENT%0AEND:VCALENDAR"`;
+
+exports[`@statflo/calendar Date class Google Calendar should run full config 1`] = `"https://www.google.com/calendar/render?action=TEMPLATE&text=Foobar&dates=20180510T020026Z/20180510T020908Z&details=Monthly%20potluck&location=1%20Yonge%20St,%20Toronto%20-%20ON%20-%20Canada&sprop=&sprop=name:"`;
+
+exports[`@statflo/calendar Date class Google Calendar should run required config 1`] = `"https://www.google.com/calendar/render?action=TEMPLATE&text=&dates=20180510T020026Z/&details=&location=&sprop=&sprop=name:"`;
+
+exports[`@statflo/calendar ISO string dates Apple Calendar and Outlook should run full config 1`] = `"data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0AURL:https://www.statflo.com%0ADTSTART:20180510T020026Z%0ADTEND:20180510T020908Z%0ASUMMARY:Foobar%0ADESCRIPTION:Monthly%20potluck%0ALOCATION:1%20Yonge%20St,%20Toronto%20-%20ON%20-%20Canada%0AEND:VEVENT%0AEND:VCALENDAR"`;
+
+exports[`@statflo/calendar ISO string dates Apple Calendar and Outlook should run required config 1`] = `"data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0AURL:%0ADTSTART:20180510T020026Z%0ADTEND:%0ASUMMARY:%0ADESCRIPTION:%0ALOCATION:%0AEND:VEVENT%0AEND:VCALENDAR"`;
+
+exports[`@statflo/calendar ISO string dates Google Calendar should run full config 1`] = `"https://www.google.com/calendar/render?action=TEMPLATE&text=Foobar&dates=20180510T020026Z/20180510T020908Z&details=Monthly%20potluck&location=1%20Yonge%20St,%20Toronto%20-%20ON%20-%20Canada&sprop=&sprop=name:"`;
+
+exports[`@statflo/calendar ISO string dates Google Calendar should run required config 1`] = `"https://www.google.com/calendar/render?action=TEMPLATE&text=&dates=20180510T020026Z/&details=&location=&sprop=&sprop=name:"`;
