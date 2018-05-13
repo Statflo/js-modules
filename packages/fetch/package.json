@@ -1,0 +1,28 @@
+{
+  "name": "@statflo/fetch",
+  "description": "A set of fetch handy functions",
+  "version": "1.0.0",
+  "repository": "https://github.com/Statflo/js-modules/tree/master/packages/calendar",
+  "author": "Helder Santana",
+  "license": "MIT",
+  "main": "dist/fetch.js",
+  "typings": "dist/fetchTools.d.ts",
+  "source": "./index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "watch": "microbundle watch",
+    "build": "microbundle",
+    "prepublish": "yarn build",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "microbundle": "^0.4.4",
+    "typescript": "^2.8.3"
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}

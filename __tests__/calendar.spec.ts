@@ -1,4 +1,4 @@
-import createCalendarEvent, { google, ics, services } from '@statflo/calendar';
+import createCalendarEvent, { google, ics, services } from '@statflo/calendar/src/calendar';
 import { CalendarEventConfig, CalendarServices, CalendarServiceTypes } from '@statflo/calendar/src/types';
 
 enum TestTopic {
