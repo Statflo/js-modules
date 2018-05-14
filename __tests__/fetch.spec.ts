@@ -13,18 +13,22 @@ describe('@statflo/fetch', () => {
             expect(await fetch('foobar')).toBe('foobar');
         });
 
-        it.skip('Should be able set middlewares', async () => {
+        it('Should be able set middlewares', async () => {
+            let game = '';
             const fetchWrapper = createMiddleware([
                 function lemonade(input) {
-                    return Promise.resolve('Lemonade');
+                    return Promise.resolve('Game: ');
                 },
                 function tycoon(input, config, previous) {
-                    input = input + previous + ' Tycoon';
+                    game = previous + 'Lemonade';
+
                     return Promise.resolve();
                 }
-            ]);
+            ], () => game += ' Tycoon');
 
-            expect(await fetchWrapper('Game: ')).toBe('Game: Lemonade Tycoon');
+            await fetchWrapper();
+
+            expect(game).toBe('Game: Lemonade Tycoon');
         });
     });
 });

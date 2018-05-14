@@ -37,16 +37,15 @@ export function createCacheableFetch<CacheShape = object>(cache: FetchToolsCache
     }
 }
 
-export function createMiddleware(stack: FetchMiddlewareStack = [], fetchHandler = fetch) {
+export function createMiddleware<ResultShape = any>(stack: FetchMiddlewareStack<ResultShape> = [], fetchHandler: Function = fetch) {
     const runMiddlewareStack = <FetchMiddlewareHybridType>async function fetchWithMiddleware(input: FetchToolsInput, init?: RequestInit) {
-        const fetchHandlerMiddleware = (input: FetchToolsInput, init?: RequestInit) => fetchHandler(input, init);
-        let result;
+        let previousResult;
 
-        for (let middleware of stack.concat([fetchHandlerMiddleware])) {
-            result = await middleware(input, init, result);
+        for (let middleware of stack) {
+            previousResult = await middleware(input, init, previousResult);
         }
 
-        return result;
+        return fetchHandler(input, init);
     };
 
     runMiddlewareStack.add = function addMiddleware(middleware) {
