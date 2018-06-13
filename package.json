@@ -19,6 +19,7 @@
         "transform": {
             "^.+\\.tsx?$": "ts-jest"
         },
+        "testPathIgnorePatterns": ["/__mocks__/"],
         "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
         "moduleFileExtensions": [
             "ts",
