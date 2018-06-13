@@ -1,6 +1,6 @@
 # @statflo/socket
 
-A promised StompJS and SocketJS class for managing subscriptions easily.
+A promised StompJS and SockJS class for managing subscriptions easily.
 
 ## Usage
 
@@ -21,7 +21,9 @@ service.connect({})  // where {} are Stomp headers
 ### Subscription
 
 ```js
-service.subscribe('foo/bar', function(message) {});
+service.subscribe('foo/bar', function(message) {
+    console.log(message);
+});
 service.unsubscribe('foo/bar');
 ```
 
