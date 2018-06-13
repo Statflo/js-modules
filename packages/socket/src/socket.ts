@@ -53,6 +53,10 @@ export default class SocketService {
     }
 
     public message(target: string, body: string) {
+        if (!this.connected) {
+            throw new Error('Socket client service is not connected');
+        }
+
         this.client.send(target, {}, body);
     }
 }

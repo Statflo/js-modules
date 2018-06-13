@@ -69,4 +69,26 @@ describe('Socket Service', () => {
             expect(service.subscriptions.size).toBe(0);
         });
     });
+
+    describe('message', () => {
+        it('should not propagate without connection', () => {
+            const service = new SocketService('foobar');
+
+            service.subscribe('foo/bar', function () {});
+            expect(() => {
+                service.message('foo/bar', 'matcha');
+            }).toThrowError('Socket client service is not connected');
+        });
+
+        it('should propagate', async(done) => {
+            const service = new SocketService('foobar');
+
+            await service.connect({});
+            service.subscribe('foo/bar', function (frame) {
+                expect(frame).toBe('matcha');
+                done();
+            });
+            service.message('foo/bar', 'matcha');
+        });
+    })
 });
