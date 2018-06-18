@@ -44,7 +44,7 @@ export class CacheService {
     async get<T = any>(key: string): Promise<T | void> {
         const result = await this.table.get(key);
 
-        if (result && !result.expires || result && result.expires > this.now) {
+        if (result && (!result.expires && result.expires > this.now)) {
             return result.value as T;
         }
 
