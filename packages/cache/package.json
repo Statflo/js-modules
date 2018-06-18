@@ -1,12 +1,12 @@
 {
   "name": "@statflo/cache",
   "description": "Indexeddb cache with TTL support",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "repository": "https://github.com/Statflo/js-modules/tree/master/packages/cache",
   "author": "Helder Santana",
   "license": "MIT",
   "main": "dist/cache.js",
-  "typings": "dist/cache.d.ts",
+  "typings": "dist/index.d.ts",
   "source": "./index.ts",
   "files": [
     "dist"
