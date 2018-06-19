@@ -7,7 +7,7 @@ export interface SocketServiceOptions {
 
 export type SocketServiceMessageCallback = (message: Stomp.Message) => void;
 
-export default class SocketService {
+export class SocketService {
     subscriptions: Map<string, Stomp.StompSubscription>;
     client: Stomp.Client;
     connected?: boolean;
@@ -60,3 +60,5 @@ export default class SocketService {
         this.client.send(target, {}, body);
     }
 }
+
+export default SocketService;
