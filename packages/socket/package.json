@@ -1,7 +1,7 @@
 {
   "name": "@statflo/socket",
   "description": "A socket class for Stomp using SockJS",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "repository": "https://github.com/Statflo/js-modules/tree/master/packages/calendar",
   "author": "Helder Santana",
   "license": "MIT",
