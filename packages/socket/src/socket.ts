@@ -1,15 +1,20 @@
 import * as SockJS from 'sockjs-client';
-import * as Stomp  from '@stomp/stompjs';
+import {
+    Stomp,
+    CompatClient,
+    Message,
+    Frame,
+    StompHeaders
+} from '@stomp/stompjs/esm6';
 
 export interface SocketServiceOptions {
     sockJS?: SockJS.Options;
 }
 
-export type SocketServiceMessageCallback = (message: Stomp.Message) => void;
+export type SocketServiceMessageCallback = (message: Message) => void;
 
 export class SocketService {
-    subscriptions: Map<string, Stomp.StompSubscription>;
-    client: Stomp.Client;
+    client: CompatClient;
     connected?: boolean;
 
     private static readonly defaultOptions = {
@@ -18,28 +23,17 @@ export class SocketService {
 
     public constructor(url: string, options: SocketServiceOptions = SocketService.defaultOptions) {
         this.client = Stomp.over(new SockJS(url, null, options.sockJS));
-        this.subscriptions = new Map();
     }
 
     public subscribe(target: string, callback: SocketServiceMessageCallback) {
-        if (!this.subscriptions.has(target)) {
-            this.subscriptions.set(target, this.client.subscribe(target, callback));
-        }
+        return this.client.subscribe(target, callback);
     }
 
-    public unsubscribe(target: string) {
-        const connection = this.subscriptions.get(target);
-        if (connection) {
-            connection.unsubscribe();
-            this.subscriptions.delete(target);
-        }
-    }
-
-    public connect(headers: Stomp.StompHeaders): Promise<Stomp.Frame | undefined> {
-        return new Promise((resolve, reject) => this.client.connect(headers, frame => {
+    public connect(headers: StompHeaders): Promise<Frame | undefined> {
+        return new Promise((resolve, reject) => this.client.connect(headers, (frame: Frame) => {
             this.connected = true;
             resolve(frame);
-        }, msg => {
+        }, (msg: Error) => {
             this.connected = false;
             reject(msg);
         }));

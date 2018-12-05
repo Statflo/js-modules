@@ -21,10 +21,10 @@ service.connect({})  // where {} are Stomp headers
 ### Subscription
 
 ```js
-service.subscribe('foo/bar', function(message) {
+const exchange = service.subscribe('foo/bar', function(message) {
     console.log(message);
 });
-service.unsubscribe('foo/bar');
+exchange.unsubscribe();
 ```
 
 ### Messaging 
