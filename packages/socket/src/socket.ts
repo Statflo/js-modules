@@ -5,7 +5,7 @@ import {
     Message,
     Frame,
     StompHeaders
-} from '@stomp/stompjs/esm6';
+} from '@stomp/stompjs/esm5';
 
 export interface SocketServiceOptions {
     sockJS?: SockJS.Options;
@@ -22,7 +22,9 @@ export class SocketService {
     }
 
     public constructor(url: string, options: SocketServiceOptions = SocketService.defaultOptions) {
+        console.log('url', url);
         this.client = Stomp.over(new SockJS(url, null, options.sockJS));
+        console.log('this', this);
     }
 
     public subscribe(target: string, callback: SocketServiceMessageCallback) {
