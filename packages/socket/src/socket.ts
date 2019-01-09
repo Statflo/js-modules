@@ -1,57 +1,71 @@
 import * as SockJS from 'sockjs-client';
-import {
-    Stomp,
-    CompatClient,
-    Message,
-    Frame,
-    StompHeaders
-} from '@stomp/stompjs/esm6';
+import * as Stomp  from '@stomp/stompjs/esm5';
 
 export interface SocketServiceOptions {
     sockJS?: SockJS.Options;
 }
 
-export type SocketServiceMessageCallback = (message: Message) => void;
+export type SocketServiceMessageCallback = (message: Stomp.Message) => void;
 
 export class SocketService {
-    client: CompatClient;
+    client: Stomp.Client;
     connected?: boolean;
 
     private static readonly defaultOptions = {
         sockJS: {}
     }
 
-    public constructor(url: string, options: SocketServiceOptions = SocketService.defaultOptions) {
-        this.client = Stomp.over(new SockJS(url, null, options.sockJS));
+    private static readonly defaultHeaders = {}
+
+    public constructor(url: string, connectHeaders: Stomp.StompHeaders = SocketService.defaultHeaders, options: SocketServiceOptions = SocketService.defaultOptions) {
+        function webSocketFactory() {
+            return new SockJS(url, null, options.sockJS);
+        }
+
+        this.client = new Stomp.Client({
+            webSocketFactory,
+            connectHeaders
+        });
     }
 
     public subscribe(target: string, callback: SocketServiceMessageCallback) {
         return this.client.subscribe(target, callback);
     }
 
-    public connect(headers: StompHeaders): Promise<Frame | undefined> {
-        return new Promise((resolve, reject) => this.client.connect(headers, (frame: Frame) => {
-            this.connected = true;
-            resolve(frame);
-        }, (msg: Error) => {
-            this.connected = false;
-            reject(msg);
-        }));
+    public connect(): Promise<Stomp.Frame | undefined> {
+        return new Promise((resolve, reject) => {
+            this.client.onConnect = (frame: Stomp.Frame) => {
+                this.connected = true;
+                resolve(frame);
+            };
+
+            this.client.onStompError = (frame: Stomp.Frame) => {
+                this.connected = false;
+                reject(frame);
+            };
+
+            this.client.activate();
+        });
     }
 
     public disconnect() {
         return new Promise(resolve => {
             this.connected = false;
-            this.client.disconnect(resolve)
+            this.client.onDisconnect = resolve;
+
+            this.client.forceDisconnect();
         });
     }
 
-    public message(target: string, body: string) {
+    public message(destination: string, body: string) {
         if (!this.connected) {
             throw new Error('Socket client service is not connected');
         }
 
-        this.client.send(target, {}, body);
+        this.client.publish({
+            destination,
+            body
+        });
     }
 }
 

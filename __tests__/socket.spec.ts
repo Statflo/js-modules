@@ -1,79 +1,70 @@
 import SocketService from '@statflo/socket/src/socket';
+import * as Stomp    from '@stomp/stompjs/esm5';
 
 jest.mock('sockjs-client');
-jest.mock('@stomp/stompjs');
+jest.mock('@stomp/stompjs/esm5');
+
+class FakeClient {
+    subscribe: jest.Mock<{}>;
+    publish: jest.Mock<{}>;
+    activate: jest.Mock<{}>;
+    onConnect?: jest.Mock<{}>;
+    onDisconnect?: jest.Mock<{}>;
+    forceDisconnect: jest.Mock<{}>;
+
+    constructor() {
+        this.subscribe = jest.fn();
+        this.publish = jest.fn();
+        this.activate = jest.fn(() => this.onConnect && this.onConnect({} as Stomp.Frame));
+        this.forceDisconnect = jest.fn(() => this.onDisconnect && this.onDisconnect());
+    }
+}
+
+(Stomp.Client as any).mockImplementation(() => new FakeClient());
 
 describe('Socket Service', () => {
-    it('should instantiate', () => {
-        const service = new SocketService('foobar');
+    let service = {} as SocketService;
 
+    beforeEach(() => service = new SocketService('foobar'));
+
+    it('should instantiate', () => {
         expect(service.client).toBeTruthy();
-        expect(service.subscriptions).toBeInstanceOf(Map);
     });
 
     describe('connection', () => {
-        it('should establish', async() => {
-            const service = new SocketService('foobar');
-    
+        it('should establish', async () => {
             expect(service.connected).toBeFalsy();
-    
-            await service.connect({});
-    
-            expect(service.connected).toBeTruthy();
-        });
-    
-        it('should finish', async() => {
-            const service = new SocketService('foobar');
-    
-            await service.connect({});
-    
-            expect(service.connected).toBeTruthy();
-    
-            await service.disconnect();
-    
-            expect(service.connected).toBeFalsy();
-        });
-    })
 
-    describe('subscription', () => {
-        it('should subscribe', done => {
-            const service = new SocketService('foobar');
-
-            service.subscribe('foo/bar', function (frame) {
-               expect(frame).toBe('matcha');
-               done();
+            return service.connect().then(() => {
+                expect(service.client.activate).toBeCalled();
+                expect(service.connected).toBeTruthy();
             });
 
-            service.client.send('foo/bar', {}, 'matcha');
         });
 
-        it('should be single by route', () => {
-            const service = new SocketService('foobar');
+        it('should finish', async(done) => {
+            await service.connect();
 
-            service.subscribe('foo/bar', function() {});
-            service.subscribe('foo/bar', function() {});
-            service.subscribe('foo/bar/foo', function() {});
+            expect(service.connected).toBeTruthy();
 
-            expect(service.subscriptions.size).toBe(2);
+            await service.disconnect();
+
+            expect(service.client.forceDisconnect).toBeCalled();
+            expect(service.connected).toBeFalsy();
+            done();
         });
+    });
 
-        it('should unsubscribe', () => {
-            const service = new SocketService('foobar');
+    it('should subscribe', () => {
+        const mockCallback = jest.fn();
 
-            service.subscribe('foo/bar', function () {});
+        service.subscribe('foo/bar', mockCallback);
 
-            expect(service.subscriptions.has('foo/bar')).toBeTruthy();
-
-            service.unsubscribe('foo/bar');
-
-            expect(service.subscriptions.size).toBe(0);
-        });
+        expect(service.client.subscribe).toBeCalledWith('foo/bar', mockCallback);
     });
 
     describe('message', () => {
         it('should not propagate without connection', () => {
-            const service = new SocketService('foobar');
-
             service.subscribe('foo/bar', function () {});
             expect(() => {
                 service.message('foo/bar', 'matcha');
@@ -81,14 +72,17 @@ describe('Socket Service', () => {
         });
 
         it('should propagate', async(done) => {
-            const service = new SocketService('foobar');
+            const mockCallback = jest.fn();
 
-            await service.connect({});
-            service.subscribe('foo/bar', function (frame) {
-                expect(frame).toBe('matcha');
+            return service.connect().then(() => {
+                service.subscribe('foo/bar', mockCallback);
+
+                service.message('foo/bar', 'matcha');
+
+                expect(service.client.publish).toBeCalledWith({ destination: 'foo/bar', body: 'matcha' });
+
                 done();
             });
-            service.message('foo/bar', 'matcha');
         });
     })
 });
