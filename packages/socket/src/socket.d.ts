@@ -1,17 +1,18 @@
 import * as SockJS from 'sockjs-client';
-import { CompatClient, Message, Frame, StompHeaders } from '@stomp/stompjs/esm6';
+import * as Stomp from '@stomp/stompjs';
 export interface SocketServiceOptions {
     sockJS?: SockJS.Options;
 }
-export declare type SocketServiceMessageCallback = (message: Message) => void;
+export declare type SocketServiceMessageCallback = (message: Stomp.Message) => void;
 export declare class SocketService {
-    client: CompatClient;
+    client: Stomp.Client;
     connected?: boolean;
     private static readonly defaultOptions;
-    constructor(url: string, options?: SocketServiceOptions);
-    subscribe(target: string, callback: SocketServiceMessageCallback): import("@stomp/stompjs/esm6").StompSubscription;
-    connect(headers: StompHeaders): Promise<Frame | undefined>;
+    private static readonly defaultHeaders;
+    constructor(url: string, connectHeaders?: Stomp.StompHeaders, options?: SocketServiceOptions);
+    subscribe(target: string, callback: SocketServiceMessageCallback): Stomp.StompSubscription;
+    connect(): Promise<Stomp.Frame | undefined>;
     disconnect(): Promise<{}>;
-    message(target: string, body: string): void;
+    message(destination: string, body: string): void;
 }
 export default SocketService;
