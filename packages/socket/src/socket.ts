@@ -1,15 +1,15 @@
 import * as SockJS from 'sockjs-client';
 import * as Stomp  from '@stomp/stompjs/esm5';
-
-export interface SocketServiceOptions {
-    sockJS?: SockJS.Options;
-}
-
-export type SocketServiceMessageCallback = (message: Stomp.Message) => void;
+import {
+    SocketServiceSubscriptions,
+    SocketServiceMessageCallback,
+    SocketServiceOptions
+} from './types';
 
 export class SocketService {
     client: Stomp.Client;
     connected?: boolean;
+    subscriptions: SocketServiceSubscriptions;
 
     private static readonly defaultOptions = {
         sockJS: {}
@@ -26,10 +26,22 @@ export class SocketService {
             webSocketFactory,
             connectHeaders
         });
+        this.subscriptions = new Map();
     }
 
     public subscribe(target: string, callback: SocketServiceMessageCallback) {
-        return this.client.subscribe(target, callback);
+        if (!this.subscriptions.has(target)) {
+            const subscription = this.client.subscribe(target, callback);
+            this.subscriptions.set(target, subscription);
+        }
+    }
+
+    public unsubscribe(target: string) {
+        const subscription = this.subscriptions.get(target);
+        if (subscription) {
+            subscription.unsubscribe();
+            this.subscriptions.delete(target);
+        }
     }
 
     public connect(): Promise<Stomp.Frame | undefined> {

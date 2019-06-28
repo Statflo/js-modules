@@ -4,8 +4,17 @@ import * as Stomp    from '@stomp/stompjs/esm5';
 jest.mock('sockjs-client');
 jest.mock('@stomp/stompjs/esm5');
 
+class FakeSubscription {
+    unsubscribe: jest.Mock<{}>;
+
+    constructor() {
+        this.unsubscribe = jest.fn();
+    }
+}
+
 class FakeClient {
     subscribe: jest.Mock<{}>;
+    unsubscribe: jest.Mock<{}>;
     publish: jest.Mock<{}>;
     activate: jest.Mock<{}>;
     onConnect?: jest.Mock<{}>;
@@ -13,7 +22,8 @@ class FakeClient {
     forceDisconnect: jest.Mock<{}>;
 
     constructor() {
-        this.subscribe = jest.fn();
+        this.subscribe = jest.fn(() => (new FakeSubscription()));
+        this.unsubscribe = jest.fn();
         this.publish = jest.fn();
         this.activate = jest.fn(() => this.onConnect && this.onConnect({} as Stomp.Frame));
         this.forceDisconnect = jest.fn(() => this.onDisconnect && this.onDisconnect());
@@ -21,6 +31,9 @@ class FakeClient {
 }
 
 (Stomp.Client as any).mockImplementation(() => new FakeClient());
+
+const mockExchange = 'foo/bar';
+const mockCallback = jest.fn();
 
 describe('Socket Service', () => {
     let service = {} as SocketService;
@@ -55,31 +68,36 @@ describe('Socket Service', () => {
         });
     });
 
-    it('should subscribe', () => {
-        const mockCallback = jest.fn();
+    describe('subscription', () => {
+        beforeEach(() => service.subscribe(mockExchange, mockCallback));
 
-        service.subscribe('foo/bar', mockCallback);
+        it('should subscribe the client to the specified exchange', () => {
+            expect(service.client.subscribe).toBeCalledWith(mockExchange, mockCallback);
+            expect(service.subscriptions.has(mockExchange)).toBe(true);
+        });
 
-        expect(service.client.subscribe).toBeCalledWith('foo/bar', mockCallback);
+        it('should unsubscribe the client from the specified exchange', () => {
+            service.unsubscribe(mockExchange);
+
+            expect(service.subscriptions.has(mockExchange)).toBe(false);
+        });
     });
 
     describe('message', () => {
         it('should not propagate without connection', () => {
-            service.subscribe('foo/bar', function () {});
+            service.subscribe(mockExchange, function () {});
             expect(() => {
-                service.message('foo/bar', 'matcha');
+                service.message(mockExchange, 'matcha');
             }).toThrowError('Socket client service is not connected');
         });
 
         it('should propagate', async(done) => {
-            const mockCallback = jest.fn();
-
             return service.connect().then(() => {
-                service.subscribe('foo/bar', mockCallback);
+                service.subscribe(mockExchange, mockCallback);
 
-                service.message('foo/bar', 'matcha');
+                service.message(mockExchange, 'matcha');
 
-                expect(service.client.publish).toBeCalledWith({ destination: 'foo/bar', body: 'matcha' });
+                expect(service.client.publish).toBeCalledWith({ destination: mockExchange, body: 'matcha' });
 
                 done();
             });
