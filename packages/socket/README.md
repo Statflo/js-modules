@@ -7,7 +7,7 @@ A promised StompJS and SockJS class for managing subscriptions easily.
 ```js
 import SocketService from '@statflo/socket';
 
-const socket = new SocketService('http://foo.bar/live', { connectHeader: 'foobar' }); // where { connectHeader } is an instance of Stomp.StompHeaders
+const service = new SocketService('http://foo.bar/live', { connectHeader: 'foobar' }); // where { connectHeader } is an instance of Stomp.StompHeaders
 
 service.connect()
     .then(frame => {
