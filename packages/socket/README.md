@@ -2,6 +2,12 @@
 
 A promised StompJS and SockJS class for managing subscriptions easily.
 
+## IE Support Warning
+
+This library does not currently work in any Windows browser due to missing polyfills. Please see this [`@stompJS` documentation](https://stomp-js.github.io/guide/stompjs/rx-stomp/ng2-stompjs/2018/06/29/pollyfils-for-stompjs-v5.html) for more details.
+
+At the time there is no plan to implement polyfill support in this library as the `text-encoding` package recommended by the `@stompJS` team is no longer being maintained and will add ~200kB to the socket client. If you need to support any legacy/Widnows browsers, it is recommended to use version `2.0.0` of this package.
+
 ## Usage
 
 ```js
