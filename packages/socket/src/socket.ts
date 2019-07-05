@@ -1,8 +1,3 @@
-// polyfills
-import 'es6-promise/auto';
-import 'es6-object-assign/auto';
-import 'text-encoding';
-
 import * as SockJS from 'sockjs-client';
 import * as Stomp  from '@stomp/stompjs/esm5';
 import {

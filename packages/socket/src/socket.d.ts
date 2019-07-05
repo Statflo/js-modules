@@ -1,6 +1,3 @@
-import 'es6-promise/auto';
-import 'es6-object-assign/auto';
-import 'text-encoding';
 import * as Stomp from '@stomp/stompjs/esm5';
 import { SocketServiceSubscriptions, SocketServiceMessageCallback, SocketServiceOptions } from './types';
 export declare class SocketService {
